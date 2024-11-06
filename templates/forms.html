@@ -1,0 +1,42 @@
+{% macro showform() -%}
+<form class="w3-row-padding w3-margin" method='POST' action="#">
+    <div class="w3-half">
+        <p>
+            <label>COURSE</label>
+            <input type="text" name="course" class="w3-input w3-border" required>
+        </p>
+    </div>
+    <div class="w3-half">
+        <p>
+            <label>LEVEL</label>
+            <input type="text"  name="level" class="w3-input w3-border" required>
+        </p>
+    </div>
+
+    <div class="w3-half">
+        <p>
+            <label>FIRSTNAME</label>
+            <input type="text" name="firstname" class="w3-input w3-border" required>
+        </p>
+    </div>
+
+    <div class="w3-half">
+        <p>
+            <label>MIDDLE NAME</label>
+            <input type="text" name="midinit" class="w3-input w3-border" required>
+        </p>
+    </div>
+
+    <div class="w3-half">
+        <p>
+            <label>LASTNAME</label>
+            <input type="text" name="lastname" class="w3-input w3-border" required>
+        </p>
+    </div>
+    <div class="w3-panel w3-center w3-padding-top w3-mobile">
+        <p class="w3-center">
+            <input type="submit" class="w3-button w3-blue w3-round-large w3-large w3-padding-16 w3-mobile" style="width:30%">
+        </p>
+    </div>
+</form>
+{%- endmacro %}

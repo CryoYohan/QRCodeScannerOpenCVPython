@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% import 'forms.html' as forms%}
+{% block content %}
+<div class="w3-card w3-left w3-container"style="width:50%;height:110vh;margin:0;padding:0;">
+    <div class="w3-bar w3-blue">
+        <h1 class="w3-center">Take Photo</h1>
+    </div>
+    <div class="w3-center" style="margin: auto;">
+        <div class="w3-bar-item w3-card w3-padding" style="width: 100%;">
+            <div id="my_camera" class="w3-border w3-center w3-border-blue w3-margin" style="width:320px; height:240px;margin:auto"></div>
+            <div class="w3-container w3-center">
+                <span class="w3-button w3-2021-french-blue w3-round-large"><a href="javascript:void(take_snapshot())" style="text-decoration: none;color:white">Take Snapshot</a></span>
+            </div>
+            {{ forms.showform() }}
+        </div>
+    </div>
+</div>
+
+<div class="w3-round-large w3-right" style="width:50%;height:110vh">
+    <div class="w3-bar w3-blue">
+        <h1 class="w3-center">Student Information</h1>
+    </div>
+    <div class="w3-card w3-padding" style="width:100%;">
+        <div id="my_result" class="w3-border w3-center w3-border-blue "style="width:320px; height:240px;"></div>
+        <div class="w3-container w3-center">
+            <span class="w3-button w3-2021-french-blue w3-round-large">Save Snapshot</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
