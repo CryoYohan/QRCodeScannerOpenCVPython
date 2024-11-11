@@ -8,23 +8,25 @@
         <script src="{{ url_for('static',filename='js/webcam.min.js')}}"></script>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 		<title>Web Cam Project v1.0</title>
+		<style>
+			html{
+				background-color: #03258C;
+			}
+		</style>
 	</head>
 	<body>
-		<div>
-			<div class="w3-blue w3-left w3-bar w3-padding-8"></div>
-			{% block content%}
-			{% endblock %}
-		</div>
-		<footer class="w3-center w3-display-bottom w3-margin-top">
-			&copy; Copyright Ypil 2024. All rights reserved.
+		{% block content%}
+		{% endblock %}
+		<footer class="w3-padding-top w3-large w3-2021-illuminating" style="margin: auto;">
+			<p>&copy; Copyright Ypil 2024. All rights reserved.</p>
 		</footer>
 	</body>
     <script language="JavaScript">
         Webcam.set({
-                width: 320,
-                height: 240,
-                dest_width: 320,
-                dest_height: 240,
+                width: 520,
+                height: 420,
+                dest_width: 520,
+                dest_height: 420,
                 image_format: 'jpeg',
                 jpeg_quality: 90,
                 force_flash: false,
@@ -35,8 +37,14 @@
 		
 		function take_snapshot() {
 			Webcam.snap( function(data_uri) {
-				document.getElementById('my_result').innerHTML = '<img src="'+data_uri+'"/>';
+				document.getElementById('my_result').innerHTML = '<img id="imageprev" src="'+data_uri+'"/>';
 			} );
-		}
+			// Update form fields with values from user inputs
+			document.getElementById('my_idno').value = idno.value;
+			document.getElementById('my_fullname').value = fullname.value;
+			document.getElementById('my_course').value = course.value;
+			document.getElementById('my_level').value = level.value;
+		} 
+
 	</script>
 </html>
