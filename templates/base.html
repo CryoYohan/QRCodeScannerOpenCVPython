@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<meta http-equiv="X-UA-Compatible" content="ie-edge">
 		<link rel="stylesheet" href="{{ url_for('static',filename='css/w3.css')}}">
+		<link rel="shortcut icon" href="{{ url_for('static', filename='images/icon/favicon.ico')}}"
         <script src="{{ url_for('static',filename='js/webcam.min.js')}}"></script>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 		<title>Web Cam Project v1.0</title>
@@ -46,21 +47,18 @@
 			document.getElementById('my_fullname').value = fullname.value;
 			document.getElementById('my_course').value = course.value;
 			document.getElementById('my_level').value = level.value;
-
-
 		} 
-
-		// Function to handle form submission
-		function saveForm() {
-			const imageData = document.getElementById('image_data').value;
-	
-			if (!imageData) {
-				alert("Please take a snapshot before saving.");
-				return;
+		
+		function save_information(){
+			var data_uri = document.getElementById('imageprev')
+			var idno = document.getElementById('my_idno').value;
+			var fullname = document.getElementById('my_fullname').value;
+			var course = document.getElementById('my_course').value;
+			var level = document.getElementById('my_level').value;
+			
+			Webcam.upload(data_uri,url,function(code,text)){
+				alert('New User Added')
 			}
-	
-			// Submit the form
-			document.getElementById('userForm').submit();
 		}
 
 	</script>
