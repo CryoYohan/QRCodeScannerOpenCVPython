@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+{% import 'forms.html' as forms %}
+<div class="w3-animate-left w3-content w3-container w3-margin-top w3-mobile" style="height: 75vh;">
+    <table class="w3-table-all w3-display-bottom w3-mobile">
+        <tr class="w3-mobile">
+            <th>ID Number</th>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Course</th> 
+            <th>Level</th>
+            <th>Update/Delete</th>
+        </tr>
+        {% for student in slist %}
+            <tr class="w3-hover-yellow w3-mobile">
+                <td>{{ student['idno']}}</td>
+                <td>{{ student['lastname'].title()}}</td>
+                <td>{{ student['firstname'].title()}}</td>
+                <td>{{ student['course'].upper()}}</td>
+                <td>{{ student['level']}}</td>
+                <td><span class="w3-button w3-2021-mint w3-round-large" onclick="showStudentModal('{{ student.idno }}', 'showimage')">View Image</span></td>                            
+            </tr>
+            {{ forms.showimagemodal('Student Image', 'showimage-'+student.idno, student.image, student.lastname, student.firstname, student.course, student.level)}}
+        {% endfor %}
+    </table>
+</div>
+<script>
+    function showStudentModal(idno, action) {
+        // Construct the modal ID dynamically
+        const modalId = action + '-' + idno;
+        
+        // Show the modal
+        document.getElementById(modalId).style.display = 'block';
+    }
+</script>
+{% endblock %}

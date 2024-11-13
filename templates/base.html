@@ -5,61 +5,71 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<meta http-equiv="X-UA-Compatible" content="ie-edge">
 		<link rel="stylesheet" href="{{ url_for('static',filename='css/w3.css')}}">
-		<link rel="shortcut icon" href="{{ url_for('static', filename='images/icon/favicon.ico')}}"
-        <script src="{{ url_for('static',filename='js/webcam.min.js')}}"></script>
+		<link rel="shortcut icon" href="{{ url_for('static', filename='images/icon/favicon.ico')}}">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 		<title>Web Cam Project v1.0</title>
-		<style>
-			html{
-				background-color: #03258C;
-			}
-		</style>
 	</head>
 	<body>
+		<div class="w3-bar w3-2021-french-blue">
+			<div class="w3-row-padding w3-padding-right">
+				<div class="w3-bar-item w3-right w3-xlarge w3-margin-top">
+					<h3><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" style="width:80px;height:80px;object-fit: contain;display:none"><a href="{{ url_for('studentlist') }}" style="text-decoration: none;color:white" title="Students List">LIST</a></h3>
+				</div>
+				<div class="w3-bar-item w3-right w3-xlarge w3-margin-top">
+					<h3><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" style="width:80px;height:80px;object-fit: contain;display:none"><a href="{{ url_for('index') }}" style="text-decoration: none;color:white" title="Home Page">HOME</a></h3>
+				</div>
+				<div class="w3-bar-item w3-left">
+					<h3><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" title="Philippine Society of Information Technology Students" style="width:80px;height:80px;object-fit: contain;">	PSITS Student Registration </h3>
+				</div>
+			</div>
+		</div>
 		{% block content%}
 		{% endblock %}
-		<footer class="w3-padding-top w3-large w3-2021-illuminating" style="margin: auto;">
+		<footer class="w3-padding-top w3-large w3-center w3-2021-illuminating" style="margin: auto;">
 			<p>&copy; Copyright Ypil 2024. All rights reserved.</p>
 		</footer>
 	</body>
-    <script language="JavaScript">
-        Webcam.set({
-                width: 520,
-                height: 420,
-                dest_width: 520,
-                dest_height: 420,
-                image_format: 'jpeg',
-                jpeg_quality: 90,
-                force_flash: false,
-                flip_horiz: true,
-                fps: 45
-        });
-		Webcam.attach( '#my_camera' );
-		
+	<script language="JavaScript">
+		Webcam.set({
+			width: 420,
+			height: 320,
+			dest_width: 420,
+			dest_height: 320,
+			image_format: 'jpeg',
+			jpeg_quality: 90,
+			force_flash: false,
+			flip_horiz: true,
+			fps: 45
+		});
+		Webcam.attach('#my_camera');
+	
 		function take_snapshot() {
-			Webcam.snap( function(data_uri) {
-				document.getElementById('my_result').innerHTML = '<img id="imageprev" src="'+data_uri+'"/>';
-				// Store the snapshot data in the hidden input field
-				document.getElementById('image_data').value = data_uri;
-			} );
-			// Update form fields with values from user inputs
-			document.getElementById('my_idno').value = idno.value;
-			document.getElementById('my_fullname').value = fullname.value;
-			document.getElementById('my_course').value = course.value;
-			document.getElementById('my_level').value = level.value;
-		} 
-		
-		function save_information(){
-			var data_uri = document.getElementById('imageprev')
-			var idno = document.getElementById('my_idno').value;
-			var fullname = document.getElementById('my_fullname').value;
-			var course = document.getElementById('my_course').value;
-			var level = document.getElementById('my_level').value;
+			Webcam.snap(function (data_uri) {
+				const idno = document.getElementById('idno').value;
+				const lastname = document.getElementById('lastname').value;
+				const firstname = document.getElementById('firstname').value;
+				const course = document.getElementById('course').value;
+				const level = document.getElementById('level').value;
+				// Check if any input field is empty
+				if (!idno || !lastname || !firstname || !course || !level) {
+				// Display an alert message if any field is empty
+				alert("Please fill in all the required fields before taking a snapshot.");
+				}
+				else{
+					// Display the snapshot image preview
+					document.getElementById('my_result').innerHTML = "<img id='imageprev' src='" + data_uri + "'/>";
+					// Set the hidden input field with image data for form submission
+					document.getElementById('image_data').value = data_uri;
+				}
+			});
 			
-			Webcam.upload(data_uri,url,function(code,text)){
-				alert('New User Added')
-			}
+			// Transfer form input values
+			document.getElementById('my_idno').value = document.getElementById('idno').value;
+			document.getElementById('my_lastname').value = document.getElementById('lastname').value;
+			document.getElementById('my_firstname').value = document.getElementById('firstname').value;
+			document.getElementById('my_course').value = document.getElementById('course').value;
+			document.getElementById('my_level').value = document.getElementById('level').value;
 		}
-
 	</script>
+	
 </html>

@@ -2,7 +2,7 @@ from sqlite3 import connect, Row
 
 class Databasehelper:
     def __init__(self)->None:
-        self.database = 'students'
+        self.database = 'students.db'
 
     def getdb_connection(self):
         connection = connect(self.database)
@@ -10,7 +10,7 @@ class Databasehelper:
     
     def getprocess(self,sql:str):
         connection = self.getdb_connection()
-        cursor = connection.cursor(dictionary=True)
+        cursor = connection.cursor()
         cursor.execute(sql)
         cursor.row_factory = Row
         data:list = cursor.fetchall()
@@ -20,7 +20,7 @@ class Databasehelper:
 
     def postprocess(self,sql:str):
         connection = self.getdb_connection()
-        cursor = connection.cursor(dictionary=True)
+        cursor = connection.cursor()
         cursor.execute(sql)
         connection.commit()
         cursor.close()
