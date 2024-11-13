@@ -1,18 +1,22 @@
 {% macro showform(mode,columns) -%}
-<form class="w3-row-padding w3-padding-large" method='POST' action="/saveinfo" style="width: 50%;margin: auto;color:black">
+<form id="userForm" class="w3-row-padding w3-padding-large" method='POST' action="/saveinfo" style="width: 50%;margin: auto;color:black">
     {% if mode == 'take_snap' %}
         {% for column in columns %}
         <div>
             <p>
                 <label style="color:white">{{column.upper()}}</label>
                 {% if column.split(' ')[0]=='full'%}
-                <input type="text" id="{{ column.split(' ')[0]+column.split(' ')[1]}}" class="w3-input w3-border" required>
+                <input type="text" id="{{ column.split(' ')[0]+column.split(' ')[1]}}" placeholder="Enter full name" class="w3-input w3-border" required>
                 {% else %}
-                <input type="text" id="{{column}}" class="w3-input w3-border" required>
+                <input type="text" id="{{column}}" placeholder="Enter {{column}}" class="w3-input w3-border" required>
                 {% endif %}
             </p>
         </div>
         {% endfor %}
+
+         <!-- Hidden input for the snapshot image data -->
+         <input type="hidden" id="image_data" name="image_data">
+
         <div class="w3-container w3-center w3-padding-large">
             <button 
                 type="button"
@@ -36,9 +40,14 @@
                 </p>
             </div>
         {% endfor %}
+
+        <!-- Hidden input for the snapshot image data -->
+        <input type="hidden" id="image_data" name="image_data">
+
         <div class="w3-container w3-center w3-padding-large">
             <button 
-                type="submit"
+                onclick="saveForm()"
+                type="button"
                 class="w3-button w3-2021-french-blue w3-round-large w3-xxlarge w3-margin-xlarge" 
                 style="color:white; border:none;width:3em">
                 <i class="glyphicon glyphicon-saved"></i>
@@ -46,4 +55,24 @@
         </div>
     {% endif %}
 </form>
+{%- endmacro %}
+
+{% macro flash_messages() -%}
+{% with messages = get_flashed_messages(with_categories=true) %}
+	{% if messages %}
+		{% for category, message in messages %}
+			{% if category == 'info' or category =='success' %}
+				<div class="w3-panel w3-bar w3-large w3-green w3-display-topmiddle w3-margin-top w3-padding w3-animate-zoom" style="width:50%;margin:auto">
+					<span align="center">{{ message }}</span>
+					<span onclick="this.parentElement.style.display='none'" class="w3-button w3-large w3-small w3-display-topright">&times;</span>
+				</div>
+			{% elif category == 'error' %}
+				<div class="w3-panel w3-bar w3-large w3-red w3-display-topmiddle w3-margin-top w3-padding w3-animate-zoom" style="width:50%;margin:auto">
+					<span align="center">{{ message }}</span>
+					<span onclick="this.parentElement.style.display='none'" class="w3-button w3-large w3-small w3-display-topright">&times;</span>
+				</div>
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+{% endwith %}
 {%- endmacro %}

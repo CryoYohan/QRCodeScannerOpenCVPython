@@ -38,13 +38,30 @@
 		function take_snapshot() {
 			Webcam.snap( function(data_uri) {
 				document.getElementById('my_result').innerHTML = '<img id="imageprev" src="'+data_uri+'"/>';
+				// Store the snapshot data in the hidden input field
+				document.getElementById('image_data').value = data_uri;
 			} );
 			// Update form fields with values from user inputs
 			document.getElementById('my_idno').value = idno.value;
 			document.getElementById('my_fullname').value = fullname.value;
 			document.getElementById('my_course').value = course.value;
 			document.getElementById('my_level').value = level.value;
+
+
 		} 
+
+		// Function to handle form submission
+		function saveForm() {
+			const imageData = document.getElementById('image_data').value;
+	
+			if (!imageData) {
+				alert("Please take a snapshot before saving.");
+				return;
+			}
+	
+			// Submit the form
+			document.getElementById('userForm').submit();
+		}
 
 	</script>
 </html>
