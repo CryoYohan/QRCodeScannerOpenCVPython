@@ -38,7 +38,7 @@
 		
 		function take_snapshot() {
 			Webcam.snap( function(data_uri) {
-				document.getElementById('my_result').innerHTML = '<img id="imageprev" src="'+data_uri+'"/>';
+				document.getElementById('my_result').innerHTML = '<img id="imageprev" src="'+data_uri+"'/>';
 			} );
 			// Update form fields with values from user inputs
 			document.getElementById('my_idno').value = idno.value;
@@ -46,6 +46,18 @@
 			document.getElementById('my_course').value = course.value;
 			document.getElementById('my_level').value = level.value;
 		} 
+		
+		function save_information(){
+			var data_uri = document.getElementById('imageprev')
+			var idno = document.getElementById('my_idno').value;
+			var fullname = document.getElementById('my_fullname').value;
+			var course = document.getElementById('my_course').value;
+			var level = document.getElementById('my_level').value;
+			
+			Webcam.upload(data_uri,url,function(code,text)){
+				alert('New User Added')
+			}
+		}
 
 	</script>
 </html>

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block content %}
+	
+	{%with messages = get_flashed_messages() %}
+					{% if messages %}
+						{% for message in messages %}
+							<div class="w3-panel w3-amber w3-padding">
+								{{ message }}
+							</div>
+						{% endfor%}
+					{% endif %}
+				{%endwith %}
+
+	<div class="w3-bar">
+		<a href ="/logout" class="w3-button w3-amber w3-right w3-margin-bottom">LOG-OUT</a>
+	</div>
+	<button class="w3-button w3-blue w3-right w3-margin-bottom" onclick="document.getElementById('usermodal').style.display='block'">+ADD</button>
+	
+	<table class="w3-table-all">
+		<tr>
+			<th>NAME</th>
+			<th>USERNAME</th>
+			<th>PASSWORD</th>
+		</tr>
+		{% for user in users %}
+		<tr>
+			<td>{{ user[1].upper() }}</td>
+			<td>{{ user[2].upper() }}</td>
+			<td>{{ user[3] }}</td>
+			<td><img src={{ user[4] }} style="width:20%"/></td>
+		</tr>
+		{% endfor%}
+	</table>
+	<div class="w3-modal" id="usermodal">
+		<div class="w3-modal-content w3-animate-top" style="width:80%">
+			<div class="w3-container w3-blue">
+				<h3>USER</h3>
+				<span class="w3-button w3-display-topright" onclick="document.getElementById('usermodal').style.display='none'">&times;</span>
+			</div>
+			<div class="w3-container w3-padding">
+				<div class="w3-row-padding">
+					<div class="w3-half">
+						<div class="w3-card-4 w3-padding w3-container">
+							<p>
+								<div class="w3-panel">
+									<div id="my_camera" style="width:320px; height:240px;"></div>
+								</div>
+							</p>
+							<p>
+								<label>NAME</label>
+								<input type="text" id="name" name="fname" class="w3-input">
+							</p>
+							<p>
+								<label>USERNAME</label>
+								<input type="text" id="username" name="username" class="w3-input">
+							</p>
+							<p>
+								<label>PASSWORD</label>
+								<input type="password" id="password" name="password" class="w3-input">
+							</p>
+							<p>
+								<button onclick="take_snapshot()" class="w3-input w3-blue">&#128247; SNAP</button>
+							</p>
+						</div>
+					</div>
+					<div class="w3-half">
+						<div id="my_result" class="w3-center w3-margin-bottom"></div>
+						<table class="w3-table-all">
+							<tr>
+								<td><b>NAME</b></td><td><div id="my_name"></div></td>
+							</tr>
+							<tr>
+								<td><b>USERNAME</b></td><td><div id="my_username"></div></td>
+							</tr>
+							<tr>
+								<td><b>PASSWORD</b></td><td><div id="my_password"></div></td>
+							</tr>
+							
+						</table>
+						<button class="w3-input w3-green w3-margin-top" onclick="save_information()">&#128427; SAVE</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		Webcam.set({
+			width: 320,
+			height: 240,
+			dest_width: 320,
+			dest_height: 240,
+			image_format: 'jpeg',
+			jpeg_quality: 90,
+			force_flash: false,
+			flip_horiz: true,
+			fps: 45
+		});
+		Webcam.attach( '#my_camera' );
+		
+		function take_snapshot() {
+			Webcam.snap( function(data_uri) {
+				document.getElementById('my_result').innerHTML = "<img id='imageprev' src='"+data_uri+"'/>";
+			} );
+			document.getElementById('my_name').innerHTML = document.getElementById('name').value;
+			document.getElementById('my_username').innerHTML = document.getElementById('username').value;
+			document.getElementById('my_password').innerHTML = document.getElementById('password').value;
+		}
+		
+		function save_information(){
+			var data_uri = document.getElementById('imageprev').src;
+			var name = document.getElementById('name').value;
+			var username = document.getElementById('username').value;
+			var password = document.getElementById('password').value;
+			var url = "/saveinformation?name="+name+"&username="+username+"&password="+password
+			Webcam.upload(data_uri,url,function(code,text){
+				alert("New User Added");
+				document.getElementById('usermodal').style.display='none'
+			});
+		}
+		
+	</script>
+	
+{% endblock %}
+
+
+
+
+
+
+
