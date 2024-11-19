@@ -7,19 +7,26 @@
 		<link rel="stylesheet" href="{{ url_for('static',filename='css/w3.css')}}">
 		<link rel="shortcut icon" href="{{ url_for('static', filename='images/icon/favicon.ico')}}">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<title>Web Cam Project v1.0</title>
+		<style>
+			.button-container {
+				display: flex;
+				justify-content: space-evenly; /* Adjust spacing */
+			}
+		</style>
 	</head>
 	<body>
 		<div class="w3-bar w3-2021-french-blue">
 			<div class="w3-row-padding w3-padding-right">
-				<div class="w3-bar-item w3-right w3-xlarge w3-margin-top">
-					<h3><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" style="width:80px;height:80px;object-fit: contain;display:none"><a href="{{ url_for('studentlist') }}" style="text-decoration: none;color:white" title="Students List">LIST</a></h3>
+				<div class="w3-bar-item w3-right w3-large w3-margin-top">
+					<h4><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" style="width:50px;height:50px;object-fit: contain;display:none"><a href="{{ url_for('studentlist') }}" style="text-decoration: none;color:white" title="Students List">LIST</a></h4>
 				</div>
-				<div class="w3-bar-item w3-right w3-xlarge w3-margin-top">
-					<h3><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" style="width:80px;height:80px;object-fit: contain;display:none"><a href="{{ url_for('index') }}" style="text-decoration: none;color:white" title="Home Page">HOME</a></h3>
+				<div class="w3-bar-item w3-right w3-large w3-margin-top">
+					<h4><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" style="width:50px;height:50px;object-fit: contain;display:none"><a href="{{ url_for('index') }}" style="text-decoration: none;color:white" title="Home Page">HOME</a></h4>
 				</div>
 				<div class="w3-bar-item w3-left">
-					<h3><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" title="Philippine Society of Information Technology Students" style="width:80px;height:80px;object-fit: contain;">	PSITS Student Registration </h3>
+					<h4><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" title="Philippine Society of Information Technology Students" style="width:50px;height:50px;object-fit: contain;">	PSITS Student Registration </h4>
 				</div>
 			</div>
 		</div>
@@ -31,10 +38,10 @@
 	</body>
 	<script language="JavaScript">
 		Webcam.set({
-			width: 420,
-			height: 320,
-			dest_width: 420,
-			dest_height: 320,
+			width: 320,
+			height: 220,
+			dest_width: 320,
+			dest_height: 220,
 			image_format: 'jpeg',
 			jpeg_quality: 90,
 			force_flash: false,

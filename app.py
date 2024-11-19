@@ -12,7 +12,21 @@ db = Databasehelper()
 app.secret_key = "@#@#@#"
 app.config['UPLOAD_FOLDER']=uploadfolder
 
+@app.route('/updatestudent/<idno>', methods=['POST'])
+def updatestudent(idno):
+    lastname:str = request.form['lastname']
+    firstname:str = request.form['firstname']
+    course:str = request.form['course']
+    level:str = request.form['level']
+    db.update_record(table=table, idno=idno,lastname=lastname,firstname=firstname, course=course, level=level)
+    flash('Student Successfully Updated!')
+    return redirect(url_for('studentlist'))
 
+@app.route('/deletestudent/<idno>')
+def deletestudent(idno):
+    db.delete_record(table=table, idno=idno)
+    flash('Student Successfully Deleted!', 'success')
+    return redirect(url_for('studentlist'))
 
 def idno_exist(idno:str):
     records:list = db.getall_records(table=table)
@@ -23,7 +37,7 @@ def idno_exist(idno:str):
 
 @app.route('/studentlist')
 def studentlist():
-    return render_template('studentlist.html',slist=db.getall_records(table=table))
+    return render_template('studentlist.html',slist=db.getall_records(table=table),columns=columns)
 
 @app.route('/saveinfo', methods=['POST'])
 def saveinfo():
@@ -37,21 +51,9 @@ def saveinfo():
 
     if not idno_exist(idno):
         print(idno,lastname,firstname,course,level)
-
-        # Decode the base64 image data
-        image_data = image_data.split(",")[1]  # Remove the prefix
-        image_data = base64.b64decode(image_data)
-
-        # Create the filename: e.g., '1001_Ypil.jpeg'
-        filename = f"{idno}_{lastname}.jpeg"
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-
-        # Save the image to the upload folder
-        with open(filepath, "wb") as f:
-            f.write(image_data)
-
+       
         # Add student info to Database
-        ok:bool = db.add_record(table=table,idno=idno,lastname=lastname,firstname=firstname,course=course,level=level,image=filename)
+        ok:bool = db.add_record(table=table,idno=idno,lastname=lastname,firstname=firstname,course=course,level=level,image=saveimage(idno=idno,lastname=lastname,image_data=image_data))
         if ok:
             flash("Student Information and Image Successfully Saved!", 'success')
         else:
@@ -59,7 +61,23 @@ def saveinfo():
         return redirect('/')
     flash('IDNO Already Exists!', 'error')
     return redirect(url_for('index'))
-    
+
+
+def saveimage(idno:str,lastname:str,image_data:str)->str:
+    # Decode the base64 image data
+    image_data = image_data.split(",")[1]  # Remove the prefix
+    image_data = base64.b64decode(image_data)
+
+    # Create the filename: e.g., '1001_Ypil.jpeg'
+    filename = f"{idno}.jpeg"
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    # Save the image to the upload folder
+    with open(filepath, "wb") as f:
+        f.write(image_data)
+    return filename
+
+
 
 @app.route('/')
 def index():

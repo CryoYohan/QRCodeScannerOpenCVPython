@@ -2,24 +2,24 @@
 {% import 'forms.html' as forms%}
 {% block content %}
 <script src="{{ url_for('static',filename='js/webcam.min.js')}}"></script>
-<div class="w3-card w3-left w3-container"style="width:50%;margin:0;background-color:#03258C">
+<div class="w3-card w3-left w3-container"style="width:50%;margin:0;padding:0;background-color:#012840">
+    <div class="w3-card w3-padding" style="margin: auto;">
+        <div class="w3-border w3-border-blue w3-center" style="height: 35vh;margin:auto;background-color:#051016">
+            <div id="my_result"></div>
+        </div>
+        <div class="w3-center" style="background-color: #012840">
+            {{ forms.showform('save_info',columns) }}
+        </div>
+    </div>
+</div>
+<div class="w3-card w3-right w3-container"style="width:50%;margin:0;background-color:#03258C">
     <div class="w3-card w3-padding" style="margin:0;padding:0;background-color:#012840;">
-        <div class="w3-border w3-border-blue" style="height: 50vh;margin:0;background-color:#051016">
+        <div class="w3-border w3-border-blue" style="height: 35vh;margin:0;background-color:#051016">
             {{ forms.flash_messages() }}
             <div id="my_camera" style="margin:auto"></div>
         </div>
         <div class="w3-center" style="background-color: #012840;">
             {{ forms.showform('take_snap',columns) }}
-        </div>
-    </div>
-</div>
-<div class="w3-card w3-right w3-container"style="width:50%;margin:0;padding:0;background-color:#012840">
-    <div class="w3-card w3-padding" style="margin: auto;">
-        <div class="w3-border w3-border-blue w3-center" style="height: 50vh;margin:auto;background-color:#051016">
-            <div id="my_result"></div>
-        </div>
-        <div class="w3-center" style="background-color: #012840">
-            {{ forms.showform('save_info',columns) }}
         </div>
     </div>
 </div>
