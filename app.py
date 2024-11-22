@@ -49,11 +49,15 @@ def saveinfo():
     level = request.form.get('my_level')
     image_data = request.form.get('image_data')  # Base64 image data
 
+    print("Form Data:", idno, lastname, firstname, course, level)
+
+
     if not idno_exist(idno):
         print(idno,lastname,firstname,course,level)
        
         # Add student info to Database
         ok:bool = db.add_record(table=table,idno=idno,lastname=lastname,firstname=firstname,course=course,level=level,image=saveimage(idno=idno,lastname=lastname,image_data=image_data))
+        print(saveimage(idno=idno,lastname=lastname,image_data=image_data))
         if ok:
             flash("Student Information and Image Successfully Saved!", 'success')
         else:
@@ -69,7 +73,7 @@ def saveimage(idno:str,lastname:str,image_data:str)->str:
     image_data = base64.b64decode(image_data)
 
     # Create the filename: e.g., '1001_Ypil.jpeg'
-    filename = f"{idno}.jpeg"
+    filename = f"{idno}_{lastname}.jpeg"
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
     # Save the image to the upload folder
