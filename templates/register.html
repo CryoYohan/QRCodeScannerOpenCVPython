@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/w3.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/icon/psitslogo.ico')}}">
+    <title>PSITS Login</title>
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='images/ucBG.png')}}");
+            background-size: cover; 
+            background-repeat: no-repeat; 
+            background-position: center;
+            height: 100vh; 
+            margin: 0; 
+        }
+    </style>
+    
+</head>
+<body>
+    {% import 'forms.html' as form %}
+    {{ form.flash_messages() }}
+    <div class="w3-bar">
+        <img class="w3-spin"src="{{ url_for('static', filename='images/psitslogo.png') }}" alt="psits logo" title="Philippine Society of Information Students" style="width: 180px;height:180px; padding:2em">
+    </div>
+    {{  form.registerForm() }}
+</body>
+</html>

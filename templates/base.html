@@ -5,25 +5,36 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<meta http-equiv="X-UA-Compatible" content="ie-edge">
 		<link rel="stylesheet" href="{{ url_for('static',filename='css/w3.css')}}">
-		<link rel="shortcut icon" href="{{ url_for('static', filename='images/icon/favicon.ico')}}">
+		<link rel="shortcut icon" href="{{ url_for('static', filename='images/icon/psitslogo.ico')}}">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<script src="{{ url_for('static',filename='js/webcam.min.js')}}"></script>
 		<title>Web Cam Project v1.0</title>
 		<style>
 			.button-container {
 				display: flex;
 				justify-content: space-evenly; /* Adjust spacing */
 			}
+			body {
+				background-image: url("{{ url_for('static', filename='images/ucBG.png')}}");
+				background-size: cover; 
+				background-repeat: no-repeat; 
+				background-position: center;
+				height: 100vh; 
+				margin: 0; 
+			}
 		</style>
 	</head>
 	<body>
+		{% import 'forms.html' as form %}
 		<div class="w3-bar w3-2021-french-blue">
 			<div class="w3-row-padding w3-padding-right">
 				<div class="w3-bar-item w3-right w3-large w3-margin-top">
-					<h4><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" style="width:50px;height:50px;object-fit: contain;display:none"><a href="{{ url_for('studentlist') }}" style="text-decoration: none;color:white" title="Students List">LIST</a></h4>
+					<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('logout') }}">LOGOUT</a><i class="glyphicon glyphicon-logout"></i></span></h4>
 				</div>
 				<div class="w3-bar-item w3-right w3-large w3-margin-top">
-					<h4><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" style="width:50px;height:50px;object-fit: contain;display:none"><a href="{{ url_for('index') }}" style="text-decoration: none;color:white" title="Home Page">HOME</a></h4>
+					<h4><span class="w3-round-large w3-button" onclick="document.getElementById('photo-add').style.display='block'">ADD	<i class="glyphicon glyphicon-plus"></i></span></h4>
+					{{ form.showform('take_snap', columns) }}
 				</div>
 				<div class="w3-bar-item w3-left">
 					<h4><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" title="Philippine Society of Information Technology Students" style="width:50px;height:50px;object-fit: contain;">	PSITS Student Registration </h4>
@@ -38,10 +49,10 @@
 	</body>
 	<script language="JavaScript">
 		Webcam.set({
-			width: 320,
-			height: 220,
-			dest_width: 320,
-			dest_height: 220,
+			width: 220,
+			height: 120,
+			dest_width: 220,
+			dest_height: 120,
 			image_format: 'jpeg',
 			jpeg_quality: 90,
 			force_flash: false,
@@ -77,6 +88,84 @@
 			document.getElementById('my_course').value = document.getElementById('course').value;
 			document.getElementById('my_level').value = document.getElementById('level').value;
 		}
+
+		function showStudentModal(idno, action) {
+			// Construct the modal ID dynamically
+			const modalId = action + '-' + idno;
+			
+			// Show the modal
+			document.getElementById(modalId).style.display = 'block';
+		
+			// Attach the webcam to the unique ID
+			if (action === 'imageupdate') {
+				attachCameraToModal(idno);
+			}
+		}
+		
+		// Function to attach webcam to the specific student modal
+		function attachCameraToModal(student_idno) {
+			const cameraId = `#my_camera2_${student_idno}`;
+			
+			// Check if the camera element exists in the DOM
+			const cameraElement = document.querySelector(cameraId);
+			if (cameraElement) {
+				// Only attempt to attach the webcam if the element exists
+				Webcam.set({
+					width: 320,
+					height: 220,
+					dest_width: 320,
+					dest_height: 220,
+					image_format: 'jpeg',
+					jpeg_quality: 90,
+					force_flash: false,
+					flip_horiz: true,
+					fps: 45
+				});
+				Webcam.attach(cameraId);
+			} else {
+				console.log(`Camera element with ID ${cameraId} not found.`);
+			}
+		}
+		
+		
+	   function saveSnapshot(student_idno) {
+		const cameraId = `#my_camera2_${student_idno}`;
+		const resultId = `my_camera2${student_idno}`;
+		
+		// Freeze the webcam to capture an image
+		Webcam.freeze(function(data_uri) {
+			// Display the snapshot in the specific result container
+			document.getElementById(resultId).innerHTML = `<img src="${data_uri}" alt="Snapshot"/>`;
+	
+			// Send the image to the server
+			sendImageToServer(student_idno, data_uri);
+		});
+	}
+	
+	function sendImageToServer(student_idno, image_data) {
+		// Prepare data to send (student ID, image data)
+		const formData = new FormData();
+		formData.append('student_idno', student_idno);
+		formData.append('image_data', image_data);
+	
+		// Send the image data to the Flask server via AJAX
+		fetch('/update_student_image', {
+			method: 'POST',
+			body: formData
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.success) {
+				alert("Image updated successfully!");
+			} else {
+				alert("Error updating image.");
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+	}
+	
 	</script>
 	
 </html>

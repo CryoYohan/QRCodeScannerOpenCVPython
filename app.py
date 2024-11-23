@@ -1,6 +1,6 @@
 import os
 import base64
-from flask import Flask, render_template, redirect, url_for, request, jsonify, flash
+from flask import Flask, render_template, redirect, url_for, request, jsonify, flash, session
 from dbhelper import Databasehelper
 
 app = Flask(__name__)
@@ -8,6 +8,7 @@ columns = ['idno','lastname','firstname','course', 'level']
 uploadfolder = 'static/images/studentimage'
 table = 'studentdata'
 db = Databasehelper()
+admin=''
 
 app.secret_key = "@#@#@#"
 app.config['UPLOAD_FOLDER']=uploadfolder
@@ -37,19 +38,20 @@ def idno_exist(idno:str):
 
 @app.route('/studentlist')
 def studentlist():
-    return render_template('studentlist.html',slist=db.getall_records(table=table),columns=columns)
+    global admin
+    return render_template('studentlist.html',slist=db.getall_records(table=table),columns=columns,admin=admin) if not session.get('name') == None else redirect(url_for('login'))
 
 @app.route('/saveinfo', methods=['POST'])
 def saveinfo():
     # Extract form data
-    idno = request.form.get('my_idno')
-    lastname = request.form.get('my_lastname')
-    firstname = request.form.get('my_firstname')
-    course = request.form.get('my_course')
-    level = request.form.get('my_level')
+    idno = request.form.get('idno')
+    lastname = request.form.get('lastname')
+    firstname = request.form.get('firstname')
+    course = request.form.get('course')
+    level = request.form.get('level')
     image_data = request.form.get('image_data')  # Base64 image data
 
-    print("Form Data:", idno, lastname, firstname, course, level)
+    print("Form Data:", idno, lastname, firstname, course, level, image_data)
 
 
     if not idno_exist(idno):
@@ -64,7 +66,7 @@ def saveinfo():
             flash("Student Information and Image Failed to save", 'error')
         return redirect('/')
     flash('IDNO Already Exists!', 'error')
-    return redirect(url_for('index'))
+    return redirect(url_for('studentlist'))
 
 
 def saveimage(idno:str,lastname:str,image_data:str)->str:
@@ -81,11 +83,53 @@ def saveimage(idno:str,lastname:str,image_data:str)->str:
         f.write(image_data)
     return filename
 
+@app.after_request
+def after_request(response):
+    response.headers['Cache-Control'] = 'no-cache,no-store,must-revalidate'
+    return response 
 
+@app.route('/logout')
+def logout():
+    session['name'] = None
+    return redirect(url_for('login'))
+
+@app.route('/registeradmin', methods=['POST'])
+def registeradmin():
+    username:str = request.form['username']
+    password:str = request.form['password']
+    db.add_record(table='admin', username=username,password=password)
+    flash('Registered Sucessfully!', 'success')
+    return redirect(url_for('studentlist'))
+
+@app.route('/loginadmin', methods=['POST'])
+def loginadmin():
+    global admin
+    username:str = request.form['username']
+    admin=username
+    password:str = request.form['password']
+    records = db.getall_records(table='admin')
+    print(records)
+    print(username, password)
+    for record in records:
+        if record['username'] == username and record['password'] == password:
+            flash(f'Welcome {username}!', 'success')
+            session['name'] = username
+            return redirect(url_for('studentlist'))
+    else:
+        flash('Invalid Credentials!', 'error')
+        return redirect(url_for('login'))
+
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
 @app.route('/')
 def index():
-    return render_template('index.html',columns=columns)
+    return render_template('index.html',columns=columns) if not session.get('name') == None else render_template('login.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)

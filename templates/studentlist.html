@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-{% import 'forms.html' as forms %}
-{{ forms.flash_messages() }}
+{% import 'forms.html' as form %}
+{{ form.flash_messages() }}
 <div class="w3-animate-left w3-content w3-container w3-margin-top w3-mobile" style="height: 100%;">
     <table class="w3-table-all w3-display-bottom w3-mobile">
         <tr class="w3-mobile">
@@ -10,7 +10,7 @@
             <th class="w3-center">First Name</th>
             <th class="w3-center">Course</th> 
             <th class="w3-center">Level</th>
-            <th class="w3-center">View/Edit Image</th>
+            <th class="w3-center">View Image</th>
             <th class="w3-center">Delete/Edit</th>  
         </tr>
         {% for student in slist %}
@@ -22,8 +22,7 @@
                 <td class="w3-center">{{ student['level']}}</td>
                 <td>
                     <div class="button-container">
-                        <span class="w3-button w3-2021-mint w3-round-large" onclick="showStudentModal('{{ student.idno }}', 'showimage')">View Image</span>
-                        <span class="w3-round-large w3-button w3-blue" onclick="showStudentModal('{{ student.idno }}', 'imageupdate')"><i class="glyphicon glyphicon-edit"></i> Edit Image</span>
+                        <span class="w3-button w3-2021-mint w3-round-large" onclick="showStudentModal('{{ student.idno }}', 'showimage')">View Image</span> 
                     </div>
                 </td>      
                 <td>
@@ -33,91 +32,11 @@
                     </div>
                 </td>                      
             </tr>
-            {{ forms.showimagemodal('Student Image', 'showimage-'+ student.idno, student)}}
-            {{ forms.showdeletemodal('Delete Student', 'delete-'+ student.idno, student.idno) }}
-            {{ forms.showModal('Update Student', 'update-'+ student.idno, student, columns) }}
-            {{ forms.updateimage('Change Student Image', 'imageupdate-' + student.idno, student.idno) }}
+            {{ form.showimagemodal('Student Image', 'showimage-'+ student.idno, student)}}
+            {{ form.showdeletemodal('Delete Student', 'delete-'+ student.idno, student.idno) }}
+            {{ form.showModal('Update Student', 'update-'+ student.idno, student, columns) }}
+            {{ form.updateimage('Change Student Image', 'imageupdate-' + student.idno, student.idno) }}
         {% endfor %}
     </table>
 </div>
-<script>
-    function showStudentModal(idno, action) {
-        // Construct the modal ID dynamically
-        const modalId = action + '-' + idno;
-        
-        // Show the modal
-        document.getElementById(modalId).style.display = 'block';
-    
-        // Attach the webcam to the unique ID
-        if (action === 'imageupdate') {
-            attachCameraToModal(idno);
-        }
-    }
-    
-    // Function to attach webcam to the specific student modal
-    function attachCameraToModal(student_idno) {
-        const cameraId = `#my_camera2_${student_idno}`;
-        
-        // Check if the camera element exists in the DOM
-        const cameraElement = document.querySelector(cameraId);
-        if (cameraElement) {
-            // Only attempt to attach the webcam if the element exists
-            Webcam.set({
-                width: 320,
-                height: 220,
-                dest_width: 320,
-                dest_height: 220,
-                image_format: 'jpeg',
-                jpeg_quality: 90,
-                force_flash: false,
-                flip_horiz: true,
-                fps: 45
-            });
-            Webcam.attach(cameraId);
-        } else {
-            console.log(`Camera element with ID ${cameraId} not found.`);
-        }
-    }
-    
-    
-   function saveSnapshot(student_idno) {
-    const cameraId = `#my_camera2_${student_idno}`;
-    const resultId = `my_camera2${student_idno}`;
-    
-    // Freeze the webcam to capture an image
-    Webcam.freeze(function(data_uri) {
-        // Display the snapshot in the specific result container
-        document.getElementById(resultId).innerHTML = `<img src="${data_uri}" alt="Snapshot"/>`;
-
-        // Send the image to the server
-        sendImageToServer(student_idno, data_uri);
-    });
-}
-
-function sendImageToServer(student_idno, image_data) {
-    // Prepare data to send (student ID, image data)
-    const formData = new FormData();
-    formData.append('student_idno', student_idno);
-    formData.append('image_data', image_data);
-
-    // Send the image data to the Flask server via AJAX
-    fetch('/update_student_image', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("Image updated successfully!");
-        } else {
-            alert("Error updating image.");
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-    
-</script>
 {% endblock %}

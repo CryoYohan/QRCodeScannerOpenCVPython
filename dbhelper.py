@@ -28,7 +28,7 @@ class Databasehelper:
         return True if cursor.rowcount > 0 else False
 
     def getall_records(self,table)->list:
-        query = f"SELECT * FROM {table} ORDER BY idno"
+        query = f"SELECT * FROM {table}"
         users:list = self.getprocess(query)
         return users
     
