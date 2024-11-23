@@ -5,7 +5,7 @@
             <div class="w3-half">
                 <p>
                     <label style="color:white">{{ column.upper() }}</label>
-                    <input type="text" value="{{ column }}" id="{{ column }}" name="{{ column }}" placeholder="Enter {{ column }}" class="w3-input w3-border w3-round-large" required>
+                    <input type="text" id="{{ column }}" name="{{ column }}" placeholder="Enter {{ column }}" class="w3-input w3-border w3-round-large" required>
                 </p>
             </div>
         {% endfor %}
@@ -25,7 +25,7 @@
             <div class="w3-half">
                 <p>
                     <label style="color:white">{{ column.upper() }}</label>
-                    <input type="text" value="my_{{ column }}" id="my_{{ column }}" name="my_{{ column }}" class="w3-input w3-border w3-round-large" style="background-color: yellow;" readonly>
+                    <input type="text" id="my_{{ column }}" name="my_{{ column }}" class="w3-input w3-border w3-round-large" style="background-color: yellow;" readonly>
                 </p>
             </div>
         {% endfor %}
