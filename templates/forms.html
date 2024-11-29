@@ -1,69 +1,60 @@
 {% macro showform(mode, columns) -%}
-<div id="photo-add" class="w3-modal" style="display: none;">
-    <div class="w3-modal-content w3-animate-zoom" style="width: 40%;">
-        <header class="w3-container w3-2021-french-blue">
-            <span onclick="document.getElementById('photo-add').style.display='none'"
-            class="w3-button w3-display-topright w3-large">&times;</span>
-            <h2 class="w3-center">{{ modal_name }}</h2>
-        </header>
-        <div class="w3-card w3-container"style="width:50%;margin:auto;background-color:#03258C">
-            <div class="w3-card w3-padding" style="margin:0;padding:0;background-color:#012840;">
-                <div class="w3-border w3-border-blue" style="margin:0;background-color:#051016">
-                    <div id="my_camera" style="margin:auto"></div>
-                </div>
-            </div>
-        </div>
-        <form id="userForm" method="POST" action="/saveinfo" style="width: 100%;margin: auto;color:black">
-            {% if mode == 'take_snap' %}
-                {% for column in columns %}
-                    <div class="w3-padding">
-                        <input type="text" id="{{ column }}" name="{{ column }}" placeholder="Enter {{ column }}" class="w3-input w3-border w3-round-large" required>
+    {% if mode == 'take_snap' %}
+        <div>
+            <form id="userForm" action="/createqr" method="POST" style="width: 100%;margin: auto;color:black">
+                    {% for column in columns %}
+                        <div class="w3-padding">
+                            <input type="text" id="{{ column }}" name="{{ column }}" placeholder="Enter {{ column }}" class="w3-input w3-border w3-round-large" required>
+                        </div>
+                    {% endfor %}
+            
+                    <div class="w3-container w3-center w3-bar w3-row-padding w3-padding">
+                        <button 
+                            type="button"
+                            onclick="take_snapshot()" 
+                            class="w3-button w3-2021-french-blue w3-round w3-xlarge w3-margin-xlarge w3-bar-item" 
+                            style="color:white; border:none;">
+                            SNAP
+                            <i class="glyphicon glyphicon-camera"></i>
+                        </button>
                     </div>
-                {% endfor %}
-                <!-- Hidden input for the snapshot image data -->
-                <input type="hidden" id="image_data" name="image_data">
-        
-                <div class="w3-container w3-center w3-bar w3-row-padding w3-padding">
-                    <button 
-                        type="submit"
-                        onclick="take_snapshot()" 
-                        class="w3-button w3-2021-french-blue w3-round  w3-xlarge w3-margin-xlarge w3-bar-item" 
-                        style="color:white; border:none;width:50%;">
-                        SAVE
-                    </button>
-                    <button 
-                        type="button"
-                        class="w3-button w3-2021-marigold w3-round w3-xlarge w3-margin-xlarge w3-bar-item" 
-                        style="color:white; border:none;width:50%">
-                        CANCEL
-                    </button>
-                </div>
-        
-            {% else %}
+            </form>
+        </div>
+    {% else %}
+        <div class="w3-row-padding">
+            <form action="/saveinfo" method="POST">
                 {% for column in columns %}
-                    <div class="w3-half">
+                    <div class="w3-half w3-row-padding">
                         <p>
                             <label style="color:white">{{ column.upper() }}</label>
-                            <input type="text" id="my_{{ column }}" name="my_{{ column }}" class="w3-input w3-border w3-round-large" style="background-color: yellow;" readonly>
+                            <input type="text" id="my_{{ column }}" name="my_{{ column }}" class="w3-input w3-border w3-round-large" style=" background: transparent;border: none; color:aliceblue" readonly>
                         </p>
                     </div>
                 {% endfor %}
-        
+    
                 <!-- Hidden input for the snapshot image data -->
                 <input type="hidden" id="image_data" name="image_data">
-        
-                <div class="w3-container w3-center w3-padding-large">
-                    <button
-                        type="submit"
-                        class="w3-button w3-2021-french-blue w3-round-large w3-xxlarge w3-margin-xlarge" 
-                        style="color:white; border:none;width:3em">
-                        <i class="glyphicon glyphicon-saved"></i>
-                    </button>
+                <div>
+                    <div class="w3-container">
+                        <button
+                            type="submit"
+                            class="w3-button w3-2021-french-blue w3-round-large w3-xlarge w3-margin-xlarge" 
+                            style="color:white; border:none;">
+                            SAVE
+                            <i class="glyphicon glyphicon-saved"></i>
+                        </button>
+                        <button
+                            type="button"
+                            class="w3-button w3-2021-french-blue w3-round-large w3-xlarge w3-margin-xlarge" 
+                            style="color:white; border:none;">
+                            <a style="text-decoration:none;color:white;"href="{{ url_for('cancel') }}">
+                                CANCEL</a>             
+                        </button>
+                    </div>
                 </div>
-            {% endif %}
-        </form>
-    </div>
-</div>
+            </form>
+        </div>       
+     {% endif %}
 {%- endmacro %}
 
 {% macro flash_messages() -%}

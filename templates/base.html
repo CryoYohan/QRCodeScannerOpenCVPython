@@ -8,7 +8,6 @@
 		<link rel="shortcut icon" href="{{ url_for('static', filename='images/icon/psitslogo.ico')}}">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-		<script src="{{ url_for('static',filename='js/webcam.min.js')}}"></script>
 		<title>Web Cam Project v1.0</title>
 		<style>
 			.button-container {
@@ -33,8 +32,10 @@
 					<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('logout') }}">LOGOUT</a><i class="glyphicon glyphicon-logout"></i></span></h4>
 				</div>
 				<div class="w3-bar-item w3-right w3-large w3-margin-top">
-					<h4><span class="w3-round-large w3-button" onclick="document.getElementById('photo-add').style.display='block'">ADD	<i class="glyphicon glyphicon-plus"></i></span></h4>
-					{{ form.showform('take_snap', columns) }}
+					<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('studentlist') }}">LIST    </a><i class="glyphicon glyphicon-th-list"></i></span></h4>
+				</div>
+				<div class="w3-bar-item w3-right w3-large w3-margin-top">
+					<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('index') }}">ADD    </a><i class="glyphicon glyphicon-plus"></i></span></h4>
 				</div>
 				<div class="w3-bar-item w3-left">
 					<h4><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" title="Philippine Society of Information Technology Students" style="width:50px;height:50px;object-fit: contain;">	PSITS Student Registration </h4>
@@ -43,43 +44,88 @@
 		</div>
 		{% block content%}
 		{% endblock %}
-		<footer class="w3-padding-top w3-large w3-center w3-2021-illuminating" style="margin: auto;">
-			<p>&copy; Copyright Ypil 2024. All rights reserved.</p>
-		</footer>
+		<div>
+			<footer class="w3-padding-top w3-large w3-bottom w3-center" style="margin: auto;">
+				<p>&copy; Copyright Ypil 2024. All rights reserved.</p>
+			</footer>
+		</div>
 	</body>
 	<script language="JavaScript">
 		Webcam.set({
-			width: 220,
-			height: 120,
-			dest_width: 220,
-			dest_height: 120,
+			width: 320,
+			height: 220,
+			dest_width: 320,
+			dest_height: 220,
 			image_format: 'jpeg',
 			jpeg_quality: 90,
 			force_flash: false,
-			flip_horiz: true,
+			flip_horiz: false,
 			fps: 45
 		});
 		Webcam.attach('#my_camera');
-	
 		function take_snapshot() {
+			// Capture the snapshot from the webcam
 			Webcam.snap(function (data_uri) {
 				const idno = document.getElementById('idno').value;
 				const lastname = document.getElementById('lastname').value;
 				const firstname = document.getElementById('firstname').value;
 				const course = document.getElementById('course').value;
 				const level = document.getElementById('level').value;
-				// Check if any input field is empty
+		
+				// Validate required fields
 				if (!idno || !lastname || !firstname || !course || !level) {
-				// Display an alert message if any field is empty
-				alert("Please fill in all the required fields before taking a snapshot.");
+					Swal.fire({
+						icon: 'warning',
+						title: 'Incomplete Fields',
+						text: 'Please fill in all the required fields before taking a snapshot.',
+						confirmButtonText: 'OK'
+					});
+					return;
 				}
-				else{
-					// Display the snapshot image preview
-					document.getElementById('my_result').innerHTML = "<img id='imageprev' src='" + data_uri + "'/>";
+
+				else {
 					// Set the hidden input field with image data for form submission
 					document.getElementById('image_data').value = data_uri;
-				}
+					// Display the snapshot image in the "my_result" div
+					document.getElementById('my_result').innerHTML = "<img id='imageprev' src='" + data_uri + "'/>";
+
+					fetch('/createqr', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',  // Set this to application/json
+						},
+						body: JSON.stringify({ idno: idno }), // Send the ID number as JSON
+					})
+					.then((response) => response.json())
+					.then((data) => {
+						if (data.success) {
+							// Display the generated QR code image
+							const qr_image_url = `/static/images/studentimage/${data.qr_filename}`;
+							document.getElementById('my_qr').innerHTML = `<img id="imageqrprev" src="${qr_image_url}" style="width:320px;height:220px;object-fit:contain"/>`;
+						} else {
+							Swal.fire({
+								icon: 'error',
+								title: 'Error',
+								text: 'Failed to generate QR code.',
+								confirmButtonText: 'OK'
+							});
+						}
+					})
+					.catch((error) => {
+						console.error('Error:', error);
+						Swal.fire({
+							icon: 'error',
+							title: 'Error',
+							text: 'Something went wrong. Please try again.',
+							confirmButtonText: 'OK'
+						});
+					});
+					
+					}
+				
+				
 			});
+		
 			
 			// Transfer form input values
 			document.getElementById('my_idno').value = document.getElementById('idno').value;
@@ -87,6 +133,7 @@
 			document.getElementById('my_firstname').value = document.getElementById('firstname').value;
 			document.getElementById('my_course').value = document.getElementById('course').value;
 			document.getElementById('my_level').value = document.getElementById('level').value;
+
 		}
 
 		function showStudentModal(idno, action) {

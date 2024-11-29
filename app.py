@@ -2,6 +2,7 @@ import os
 import base64
 from flask import Flask, render_template, redirect, url_for, request, jsonify, flash, session
 from dbhelper import Databasehelper
+from qrmaker import QRMaker
 
 app = Flask(__name__)
 columns = ['idno','lastname','firstname','course', 'level']
@@ -9,6 +10,7 @@ uploadfolder = 'static/images/studentimage'
 table = 'studentdata'
 db = Databasehelper()
 admin=''
+qr = QRMaker()
 
 app.secret_key = "@#@#@#"
 app.config['UPLOAD_FOLDER']=uploadfolder
@@ -41,14 +43,38 @@ def studentlist():
     global admin
     return render_template('studentlist.html',slist=db.getall_records(table=table),columns=columns,admin=admin) if not session.get('name') == None else redirect(url_for('login'))
 
+@app.route('/cancel')
+def cancel():
+    idno:str = request.form['idno']
+    pass
+
+@app.route('/createqr', methods=['POST'])
+def createqr():
+    data = request.get_json()  # Parse JSON data from the request
+    if not data:
+        return jsonify({'success': False, 'error': 'Invalid JSON format'}), 400
+    
+    idno = data.get('idno')
+    if not idno:
+        return jsonify({'success': False, 'error': 'ID number is required'}), 400
+
+    # Generate the QR code
+    qr_filename = f"{idno}.png"
+    qr.create_qr(idno)
+
+    # Return the QR code filename
+    return jsonify({'success': True, 'qr_filename': qr_filename})
+
+
+
 @app.route('/saveinfo', methods=['POST'])
 def saveinfo():
     # Extract form data
-    idno = request.form.get('idno')
-    lastname = request.form.get('lastname')
-    firstname = request.form.get('firstname')
-    course = request.form.get('course')
-    level = request.form.get('level')
+    idno = request.form.get('my_idno')
+    lastname = request.form.get('my_lastname')
+    firstname = request.form.get('my_firstname')
+    course = request.form.get('my_course')
+    level = request.form.get('my_level')
     image_data = request.form.get('image_data')  # Base64 image data
 
     print("Form Data:", idno, lastname, firstname, course, level, image_data)
