@@ -8,6 +8,11 @@
 		<link rel="shortcut icon" href="{{ url_for('static', filename='images/icon/psitslogo.ico')}}">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"
+		integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ=="
+		crossorigin="anonymous"
+		></script>
 		<title>Web Cam Project v1.0</title>
 		<style>
 			.button-container {
@@ -22,6 +27,25 @@
 				height: 100vh; 
 				margin: 0; 
 			}
+			.center {
+				text-align: center;
+			  }
+			  .status {
+				color: #fff;
+				padding: 1rem;
+			  }
+			  .message {
+				font-size: 2.5rem;
+			  }
+			  .message-info {
+				background-color: rgb(89, 46, 245);
+			  }
+			  .message-allowed {
+				background-color: green;
+			  }
+			  .message-denied {
+				background-color: red;
+			  }
 		</style>
 	</head>
 	<body>
@@ -32,10 +56,13 @@
 					<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('logout') }}">LOGOUT</a><i class="glyphicon glyphicon-logout"></i></span></h4>
 				</div>
 				<div class="w3-bar-item w3-right w3-large w3-margin-top">
-					<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('studentlist') }}">LIST    </a><i class="glyphicon glyphicon-th-list"></i></span></h4>
+					<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('studentlist') }}">STUDENTS    </a><i class="glyphicon glyphicon-user"></i></span></h4>
 				</div>
 				<div class="w3-bar-item w3-right w3-large w3-margin-top">
 					<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('index') }}">ADD    </a><i class="glyphicon glyphicon-plus"></i></span></h4>
+				</div>
+				<div class="w3-bar-item w3-right w3-large w3-margin-top">
+					<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('attendance') }}">VIEW ATTENDANCE    </a><i class="glyphicon glyphicon-list-alt"></i></span></h4>
 				</div>
 				<div class="w3-bar-item w3-left">
 					<h4><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" title="Philippine Society of Information Technology Students" style="width:50px;height:50px;object-fit: contain;">	PSITS Student Registration </h4>
@@ -213,6 +240,38 @@
 		});
 	}
 	
+	// CANCEL FUNCTION DELETES THE GENERATED QR
+	function deleteQR(){
+		const idnoqr = document.getElementById('my_idno').value;
+		fetch(`/deleteqr/${idnoqr}`,{
+			method: 'POST',
+
+		})
+		.then((response) => response.json())
+		.then((data) => {
+			if (data.success) {
+				window.location.href = "/"
+			} else {
+				Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: data.error || 'An error occured.',
+					confirmButtonText: 'OK'
+				});
+			}
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+			Swal.fire({
+				icon: 'error',
+				title: 'Error',
+				text: 'Something went wrong. Please try again.',
+				confirmButtonText: 'OK'
+			});
+		});
+					
+	}
+
 	</script>
 	
 </html>

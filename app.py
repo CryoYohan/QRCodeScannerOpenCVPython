@@ -1,8 +1,13 @@
 import os
 import base64
-from flask import Flask, render_template, redirect, url_for, request, jsonify, flash, session
+from flask import Flask, render_template, redirect, url_for, request, Response,jsonify, flash, session
 from dbhelper import Databasehelper
 from qrmaker import QRMaker
+from importlib import import_module
+from flask_socketio import SocketIO, emit
+from qr_scanner import QRScanner
+from camera_opencv import Camera
+from base_camera import BaseCamera
 
 app = Flask(__name__)
 columns = ['idno','lastname','firstname','course', 'level']
@@ -11,10 +16,71 @@ table = 'studentdata'
 db = Databasehelper()
 admin=''
 qr = QRMaker()
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 app.secret_key = "@#@#@#"
 app.config['UPLOAD_FOLDER']=uploadfolder
 
+# ------------------ QR CODE SCANNER --------------------------------
+qr_code_scanner = QRScanner()
+
+def generate_frames(camera):
+    while True:
+        is_granted, is_denied = False, False
+        image = camera.get_frame()
+
+        result = QRScanner.read_qr_code(image)
+        if len(result) == 0:
+            socketio.emit(
+                "scan_result",
+                {"status": "scan", "message": "Please scan your QR Code"},
+            ) 
+
+        for barcode in result:
+            myData = barcode.data.decode("utf-8")
+            records = db.getall_records(table='studentdata')
+            for data in records:
+                if data['idno'] == myData:
+                    socketio.emit(
+                        "scan_result",
+                        {"status": "granted", "message": f"Student ID : {myData}"},
+                    )
+                    is_granted = True
+                else:
+                    print("Not found in the database!")
+                    socketio.emit(
+                        "scan_result", {"status": "denied", "message": f"Student ID : {myData}"}
+                    )
+                    is_denied = True
+                QRScanner.add_box_to_qr_code(image, barcode)
+
+        if is_granted:
+            image = qr_code_scanner.get_access_granted_img()
+            data:list = []
+            records = db.getall_records(table='studentdata')
+            for record in records:
+                if myData == record['idno']:
+                    data = record
+            db.add_record(table='attendancelog',idno=data['idno'],lastname=data['lastname'],firstname=data['firstname'],dateandtime='2024-11-30' )
+        elif is_denied:
+            image = qr_code_scanner.get_access_denied_img()
+
+        frame = QRScanner.encode(image)
+
+        if is_granted or is_denied:
+            for _ in range(2):
+                yield (b"--frame\r\n" + b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
+        else:
+            yield (b"--frame\r\n" + b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
+
+
+@app.route("/video")
+def video():
+    return Response(
+        generate_frames(Camera()), mimetype="multipart/x-mixed-replace; boundary=frame"
+    )
+
+#----------------------------------------------------------------------
 @app.route('/updatestudent/<idno>', methods=['POST'])
 def updatestudent(idno):
     lastname:str = request.form['lastname']
@@ -27,6 +93,14 @@ def updatestudent(idno):
 
 @app.route('/deletestudent/<idno>')
 def deletestudent(idno):
+    img_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{idno}.jpeg")
+    qr_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{idno}.png")
+    try:
+            # Remove the image file from static folder
+            os.remove(img_path)
+            os.remove(qr_path)
+    except Exception as e:
+        print(f"Error deleting QR code: {e}")
     db.delete_record(table=table, idno=idno)
     flash('Student Successfully Deleted!', 'success')
     return redirect(url_for('studentlist'))
@@ -65,6 +139,19 @@ def createqr():
     # Return the QR code filename
     return jsonify({'success': True, 'qr_filename': qr_filename})
 
+@app.route('/deleteqr/<string:idno>', methods=['POST'])
+def deleteqr(idno):
+    # Path to the QR code file
+    qr_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{idno}.png")
+    
+    try:
+            # Remove the QR code file
+            os.remove(qr_path)
+            return jsonify({'success': True})
+    except Exception as e:
+        print(f"Error deleting QR code: {e}")
+        return jsonify({'success': False, 'error': 'Failed to delete QR code'}), 500
+
 
 
 @app.route('/saveinfo', methods=['POST'])
@@ -84,8 +171,8 @@ def saveinfo():
         print(idno,lastname,firstname,course,level)
        
         # Add student info to Database
-        ok:bool = db.add_record(table=table,idno=idno,lastname=lastname,firstname=firstname,course=course,level=level,image=saveimage(idno=idno,lastname=lastname,image_data=image_data))
-        print(saveimage(idno=idno,lastname=lastname,image_data=image_data))
+        ok:bool = db.add_record(table=table,idno=idno,lastname=lastname,firstname=firstname,course=course,level=level,image=saveimage(idno=idno,image_data=image_data))
+        print(saveimage(idno=idno,image_data=image_data))
         if ok:
             flash("Student Information and Image Successfully Saved!", 'success')
         else:
@@ -94,14 +181,13 @@ def saveinfo():
     flash('IDNO Already Exists!', 'error')
     return redirect(url_for('studentlist'))
 
-
-def saveimage(idno:str,lastname:str,image_data:str)->str:
+def saveimage(idno:str,image_data:str)->str:
     # Decode the base64 image data
     image_data = image_data.split(",")[1]  # Remove the prefix
     image_data = base64.b64decode(image_data)
 
     # Create the filename: e.g., '1001_Ypil.jpeg'
-    filename = f"{idno}_{lastname}.jpeg"
+    filename = f"{idno}.jpeg"
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
     # Save the image to the upload folder
@@ -140,7 +226,7 @@ def loginadmin():
         if record['username'] == username and record['password'] == password:
             flash(f'Welcome {username}!', 'success')
             session['name'] = username
-            return redirect(url_for('studentlist'))
+            return redirect(url_for('attendance'))
     else:
         flash('Invalid Credentials!', 'error')
         return redirect(url_for('login'))
@@ -153,7 +239,14 @@ def register():
 def login():
     return render_template('login.html')
 
+@app.route('/granted/myData')
+def grant(myData):
+     return render_template('granted.html', mydata=myData) if not session.get('name') == None else render_template('login.html')
 @app.route('/')
+def attendance():
+      return render_template('attendance.html') if not session.get('name') == None else render_template('login.html')
+
+@app.route('/index')
 def index():
     return render_template('index.html',columns=columns) if not session.get('name') == None else render_template('login.html')
 

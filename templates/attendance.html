@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<main class="center">
+    <div>
+    <img src="{{url_for('video')}}" width="640" height="480" />
+    </div>
+    <div class="status">
+    <h1 id="message" class="message message-info">SCAN YOUR QR CODE</h1>
+    </div>
+</main>
+<script>
+    window.addEventListener("DOMContentLoaded", (event) => {
+    console.log("DOM fully loaded and parsed");
+    const message = document.querySelector("#message");
+    var socket = io.connect();
+
+    //receive details from server
+    socket.on("scan_result", function (msg) {
+        if (msg.status === "denied") {
+        console.log("Access Denied");
+        message.innerHTML = msg.message;
+        message.classList.remove("message-allowed");
+        message.classList.remove("message-info");
+        message.classList.add("message-denied");
+        } else if (msg.status === "granted") {
+        console.log("Access Granted");
+        message.innerHTML = msg.message;
+        message.classList.remove("message-denied");
+        message.classList.remove("message-info");
+        message.classList.add("message-allowed");
+        } else {
+        message.innerHTML = msg.message;
+        message.classList.remove("message-denied");
+        message.classList.remove("message-allowed");
+        message.classList.add("message-info");
+        }
+    });
+    });
+</script>
+{% endblock %}

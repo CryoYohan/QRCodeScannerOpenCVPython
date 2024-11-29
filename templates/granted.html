@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
+{% import 'forms.html' as form %}
+{{ form.showimagemodal('Student', 'granted-' + idno, student) }}
+{% endblock %}

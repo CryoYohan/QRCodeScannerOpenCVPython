@@ -10,7 +10,7 @@
             <th class="w3-center">First Name</th>
             <th class="w3-center">Course</th> 
             <th class="w3-center">Level</th>
-            <th class="w3-center">View Image</th>
+            <th class="w3-center">View Image/QR</th>
             <th class="w3-center">Delete/Edit</th>  
         </tr>
         {% for student in slist %}
@@ -22,7 +22,8 @@
                 <td class="w3-center">{{ student['level']}}</td>
                 <td>
                     <div class="button-container">
-                        <span class="w3-button w3-2021-mint w3-round-large" onclick="showStudentModal('{{ student.idno }}', 'showimage')">View Image</span> 
+                        <span class="w3-button w3-2021-mint w3-round-large" onclick="showStudentModal('{{ student.idno }}', 'showimage')">Image</span>
+                        <span class="w3-button w3-2021-mint w3-round-large" onclick="showStudentModal('{{ student.idno }}', 'showqr')">QR</span>  
                     </div>
                 </td>      
                 <td>
@@ -33,6 +34,7 @@
                 </td>                      
             </tr>
             {{ form.showimagemodal('Student Image', 'showimage-'+ student.idno, student)}}
+            {{ form.showimagemodal('Student QR', 'showqr-'+ student.idno, student)}}
             {{ form.showdeletemodal('Delete Student', 'delete-'+ student.idno, student.idno) }}
             {{ form.showModal('Update Student', 'update-'+ student.idno, student, columns) }}
             {{ form.updateimage('Change Student Image', 'imageupdate-' + student.idno, student.idno) }}
