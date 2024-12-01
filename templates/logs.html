@@ -1,19 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="w3-container">
-    <table class="w3-table-all w3-mobile" style="width: 50%;">
-        <th>ID</th>
-        <th>IDNO</th>
-        <th>LASTNAME</th>
-        <th>FIRSTNAME</th>
-        <th>DATE/TIME</th>
+<div class="w3-container w3-content w3-margin-top">
+    <table class="w3-table-all w3-mobile">
+        <th class="w3-center">ID</th>
+        <th class="w3-center">IDNO</th>
+        <th class="w3-center">LASTNAME</th>
+        <th class="w3-center">FIRSTNAME</th>
+        <th class="w3-center">COURSE</th>
+        <th class="w3-center">LEVEL</th>
+        <th class="w3-center">TIME LOGGED</th>
         {% for log in logs%}
             <tr class="w3-hover-yellow w3-mobile">
                 <td class="w3-center">{{ log['id'] }}</td>
                 <td class="w3-center">{{ log['idno'] }}</td>
                 <td class="w3-center">{{ log['lastname'].title() }}</td>
                 <td class="w3-center">{{ log['firstname'].title() }}</td>
-                <td class="w3-center">{{ log['dateandtime'] }}</td>
+                <td class="w3-center">{{ log['course']}}</td>
+                <td class="w3-center">{{ log['level']}}</td>
+                <td class="w3-center">{{ log['timelogged'] }}</td>
             </tr>
         {% endfor %}
     </table>

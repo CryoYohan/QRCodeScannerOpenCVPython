@@ -43,7 +43,15 @@ def generate_frames(camera):
                 if data['idno'] == myData:
                     socketio.emit(
                         "scan_result",
-                        {"status": "granted", "message": f"Student ID : {myData}"},
+                        {"status": "granted", 
+                         "message": f"Student ID : { data['idno']}",
+                         "studentid": data['idno'],
+                         "studentlastname": data['lastname'],
+                         "studentfirstname": data['firstname'],
+                         "studentcourse": data['course'],
+                         "studentlevel":data['level'],
+                         "image_filename": data['image'],  # Send the image filename
+                        }
                     )
                     is_granted = True
                 else:
@@ -62,7 +70,8 @@ def generate_frames(camera):
                 if myData == record['idno']:
                     data = record
             current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            db.add_record(table='attendancelog',idno=data['idno'],lastname=data['lastname'],firstname=data['firstname'],dateandtime=current_datetime )
+            db.add_record(table='attendancelog',idno=data['idno'],lastname=data['lastname'],firstname=data['firstname'],course=data['course'],level=data['level'],timelogged=current_datetime )
+       
         elif is_denied:
             image = qr_code_scanner.get_access_denied_img()
 
@@ -170,7 +179,7 @@ def saveinfo():
             flash("Student Information and Image Successfully Saved!", 'success')
         else:
             flash("Student Information and Image Failed to save", 'error')
-        return redirect('/')
+        return redirect('studentlist')
     flash('IDNO Already Exists!', 'error')
     deleteqr(idno)
     return redirect(url_for('studentlist'))

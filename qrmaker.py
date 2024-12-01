@@ -5,7 +5,7 @@ from PIL import Image  # Ensure this import is present
 class QRMaker:
     def create_qr(self,data:str):
         # Instantiate QRCode object
-        qr = qrcode.QRCode(version=1, box_size=10, border=4)
+        qr = qrcode.QRCode(version=2, box_size=10, border=4)
         # Add data to the QR code
         qr.add_data(data)
         # Compile the data into a QR code array

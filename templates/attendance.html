@@ -7,12 +7,38 @@
     <div class="status">
     <h1 id="message" class="message message-info">SCAN YOUR QR CODE</h1>
     </div>
+    <!-- Modal -->
+    <div id="granted-modal" class="w3-modal ">
+        <div class="w3-modal-content w3-animate-zoom w3-round-large">
+            <header class="w3-container w3-green">
+                <span onclick="document.getElementById('granted-modal').style.display='none'"
+                class="w3-button w3-display-topright w3-large">&times;</span>
+                <h2>Access Granted</h2>
+            </header>
+            <div class="w3-container" id="modal-content">
+                <p>Student details will appear here.</p>
+                <h3>Student ID</h3>
+                <p id="studentidp"><b></b></p>
+                <h3>Student Lastname</h3>
+                <p id="studentlastname"><b></b></p>
+                <h3>Student Firstname</h3>
+                <p id="studentfirstname"><b></b></p>
+                <h3>Student Course</h3>
+                <p id="studentcourse"><b></b></p>
+                <h3>Student Level</h3>
+                <p id="studentlevel"><b></b></p>
+                <h3>Image</h3>
+                <img id="studentImage" src="" alt="Student Image" />
+            </div>
+        </div>
+    </div>
 </main>
 <script>
     window.addEventListener("DOMContentLoaded", (event) => {
     console.log("DOM fully loaded and parsed");
     const message = document.querySelector("#message");
     var socket = io.connect();
+    const modal = document.getElementById("granted-modal");
 
     //receive details from server
     socket.on("scan_result", function (msg) {
@@ -28,6 +54,15 @@
         message.classList.remove("message-denied");
         message.classList.remove("message-info");
         message.classList.add("message-allowed");
+        modal.style.display = "block";
+        studentidp.innerHTML = msg.studentid;
+        studentlastname.innerHTML = msg.studentlastname;
+        studentfirstname.innerHTML = msg.studentfirstname;
+        studentcourse.innerHTML = msg.studentcourse;
+        studentlevel.innerHTML = msg.studentlevel;
+
+        studentImage.src = `/static/images/studentimage/${msg.image_filename}`;
+
         } else {
         message.innerHTML = msg.message;
         message.classList.remove("message-denied");

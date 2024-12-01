@@ -86,13 +86,13 @@
         </header>
         <div class="w3-center" style="position: absolute;">
             {% if id.split('-')[0] == 'showimage' %}
-                <img style="width:550px; height:400px"src="{{ url_for('static', filename='images/studentimage/'+ student['image']) }}" alt="Student Image" title="Picture of {{ student['lastname'].title() + ', ' + student['firstname'].title() }}" >
+                <img style="width:551px; height:430px"src="{{ url_for('static', filename='images/studentimage/'+ student['image']) }}" alt="Student Image" title="Picture of {{ student['lastname'].title() + ', ' + student['firstname'].title() }}" >
                 <div class="" style="width:100%;position: relative;bottom:7.5em;color:white;">
                     <h3 style="text-decoration: underline;">{{ student['lastname'].title() + ', ' + student['firstname'].title() }}</h3>
                     <p><i>Student Image</i></p>
                 </div>
             {% else %}
-                <img style="width:550px; height:400px"src="{{ url_for('static', filename='images/studentimage/'+ student['idno'] + '.png') }}" alt="Student QR Code" title="QR Code for {{ student['lastname'].title() + ', ' + student['firstname'].title() }}" >
+                <img style="width:550px; height:480px"src="{{ url_for('static', filename='images/studentimage/'+ student['idno'] + '.png') }}" alt="Student QR Code" title="QR Code for {{ student['lastname'].title() + ', ' + student['firstname'].title() }}" >
             {% endif %}
         </div>
 
