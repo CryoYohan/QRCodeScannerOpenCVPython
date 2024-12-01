@@ -7,7 +7,7 @@ from importlib import import_module
 from flask_socketio import SocketIO, emit
 from qr_scanner import QRScanner
 from camera_opencv import Camera
-from base_camera import BaseCamera
+from datetime import datetime
 
 app = Flask(__name__)
 columns = ['idno','lastname','firstname','course', 'level']
@@ -61,7 +61,8 @@ def generate_frames(camera):
             for record in records:
                 if myData == record['idno']:
                     data = record
-            db.add_record(table='attendancelog',idno=data['idno'],lastname=data['lastname'],firstname=data['firstname'],dateandtime='2024-11-30' )
+            current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            db.add_record(table='attendancelog',idno=data['idno'],lastname=data['lastname'],firstname=data['firstname'],dateandtime=current_datetime )
         elif is_denied:
             image = qr_code_scanner.get_access_denied_img()
 
@@ -139,18 +140,10 @@ def createqr():
     # Return the QR code filename
     return jsonify({'success': True, 'qr_filename': qr_filename})
 
+# Cancel button
 @app.route('/deleteqr/<string:idno>', methods=['POST'])
 def deleteqr(idno):
-    # Path to the QR code file
-    qr_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{idno}.png")
-    
-    try:
-            # Remove the QR code file
-            os.remove(qr_path)
-            return jsonify({'success': True})
-    except Exception as e:
-        print(f"Error deleting QR code: {e}")
-        return jsonify({'success': False, 'error': 'Failed to delete QR code'}), 500
+   return deleteqr_module(idno)
 
 
 
@@ -164,7 +157,7 @@ def saveinfo():
     level = request.form.get('my_level')
     image_data = request.form.get('image_data')  # Base64 image data
 
-    print("Form Data:", idno, lastname, firstname, course, level, image_data)
+    print("Form Data:", idno, lastname, firstname, course, level)
 
 
     if not idno_exist(idno):
@@ -179,7 +172,20 @@ def saveinfo():
             flash("Student Information and Image Failed to save", 'error')
         return redirect('/')
     flash('IDNO Already Exists!', 'error')
+    deleteqr(idno)
     return redirect(url_for('studentlist'))
+
+def deleteqr_module(idno):
+    # Path to the QR code file
+    qr_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{idno}.png")
+    
+    try:
+            # Remove the QR code file
+            os.remove(qr_path)
+            return jsonify({'success': True})
+    except Exception as e:
+        print(f"Error deleting QR code: {e}")
+        return jsonify({'success': False, 'error': 'Failed to delete QR code'}), 500
 
 def saveimage(idno:str,image_data:str)->str:
     # Decode the base64 image data
@@ -242,6 +248,11 @@ def login():
 @app.route('/granted/myData')
 def grant(myData):
      return render_template('granted.html', mydata=myData) if not session.get('name') == None else render_template('login.html')
+
+@app.route('/logs')
+def logs():
+    return render_template('logs.html',logs=db.getall_records(table='attendancelog')) if not session.get('name') == None else render_template('login.html')
+
 @app.route('/')
 def attendance():
       return render_template('attendance.html') if not session.get('name') == None else render_template('login.html')

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="w3-container">
+    <table class="w3-table-all w3-mobile" style="width: 50%;">
+        <th>ID</th>
+        <th>IDNO</th>
+        <th>LASTNAME</th>
+        <th>FIRSTNAME</th>
+        <th>DATE/TIME</th>
+        {% for log in logs%}
+            <tr class="w3-hover-yellow w3-mobile">
+                <td class="w3-center">{{ log['id'] }}</td>
+                <td class="w3-center">{{ log['idno'] }}</td>
+                <td class="w3-center">{{ log['lastname'].title() }}</td>
+                <td class="w3-center">{{ log['firstname'].title() }}</td>
+                <td class="w3-center">{{ log['dateandtime'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
