@@ -50,30 +50,39 @@
 	</head>
 	<body>
 		{% import 'forms.html' as form %}
-		<div class="w3-bar w3-2021-french-blue">
-			<div class="w3-row-padding w3-padding-right">
-				<div class="w3-bar-item w3-right w3-large w3-margin-top">
-					<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('logout') }}">LOGOUT</a><i class="glyphicon glyphicon-logout"></i></span></h4>
-				</div>
-				<div class="w3-bar-item w3-right w3-large w3-margin-top">
-					<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('studentlist') }}">STUDENTS    </a><i class="glyphicon glyphicon-user"></i></span></h4>
-				</div>
-				<div class="w3-bar-item w3-right w3-large w3-margin-top">
-					<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('index') }}">ADD    </a><i class="glyphicon glyphicon-plus"></i></span></h4>
-				</div>
-				<div class="w3-bar-item w3-right w3-large w3-margin-top">
-					<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('logs') }}">VIEW ATTENDANCE    </a><i class="glyphicon glyphicon-list-alt"></i></span></h4>
-				</div>
-				<div class="w3-bar-item w3-left">
-					<h4><a href="{{ url_for('attendance') }}"><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" title="Philippine Society of Information Technology Students" style="width:50px;height:50px;object-fit: contain;"></a>	PSITS Student Registration </h4>
+		{% if not attendance_checker %}
+			<div class="w3-bar w3-2021-french-blue">
+				<div class="w3-row-padding w3-padding-right">
+					<div class="w3-bar-item w3-right w3-large w3-margin-top">
+						<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('logout') }}">LOGOUT</a><i class="glyphicon glyphicon-logout"></i></span></h4>
+					</div>
+					<div class="w3-bar-item w3-right w3-large w3-margin-top">
+						<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('studentlist') }}">STUDENTS    </a><i class="glyphicon glyphicon-user"></i></span></h4>
+					</div>
+					<div class="w3-bar-item w3-right w3-large w3-margin-top">
+						<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('index') }}">ADD    </a><i class="glyphicon glyphicon-plus"></i></span></h4>
+					</div>
+					<div class="w3-bar-item w3-right w3-large w3-margin-top">
+						<h4><span class="w3-round-large w3-button"><a style="text-decoration:none;color:white;" href="{{ url_for('logs') }}">VIEW ATTENDANCE    </a><i class="glyphicon glyphicon-list-alt"></i></span></h4>
+					</div>
+					<div class="w3-bar-item w3-left">
+						<h4><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" title="Philippine Society of Information Technology Students" style="width:50px;height:50px;object-fit: contain;">PSITS Student Registration </h4>
+					</div>
 				</div>
 			</div>
-		</div>
+		{% else %}
+			<div class="w3-bar w3-2021-french-blue">
+					<div class="w3-bar-item w3-left">
+						<h4><img src="{{ url_for('static',filename='images/psitslogo.png') }}" alt="PSITS LOGO" title="Philippine Society of Information Technology Students" style="width:50px;height:50px;object-fit: contain;">	PSITS Attendance Checker </h4>
+					</div>
+				</div>
+			</div>
+		{% endif %}
 		{% block content%}
 		{% endblock %}
 		<div>
 			<footer class="w3-padding-top w3-large w3-bottom w3-center" style="margin: auto;">
-				<p>&copy; Copyright Ypil 2024. All rights reserved.</p>
+				<p>&copy; Copyright Ypil & Amaro 2024. All rights reserved.</p>
 			</footer>
 		</div>
 	</body>
@@ -250,7 +259,7 @@
 		.then((response) => response.json())
 		.then((data) => {
 			if (data.success) {
-				window.location.href = "/"
+				window.location.href = "/index"
 			} else {
 				Swal.fire({
 					icon: 'error',

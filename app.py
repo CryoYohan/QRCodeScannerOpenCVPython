@@ -2,7 +2,7 @@ import os
 import base64
 from flask import Flask, render_template, redirect, url_for, request, Response,jsonify, flash, session
 from dbhelper import Databasehelper
-from qrmaker import QRMaker
+from qrmaker_v2 import QRMaker
 from importlib import import_module
 from flask_socketio import SocketIO, emit
 from qr_scanner import QRScanner
@@ -125,12 +125,7 @@ def idno_exist(idno:str):
 @app.route('/studentlist')
 def studentlist():
     global admin
-    return render_template('studentlist.html',slist=db.getall_records(table=table),columns=columns,admin=admin) if not session.get('name') == None else redirect(url_for('login'))
-
-@app.route('/cancel')
-def cancel():
-    idno:str = request.form['idno']
-    pass
+    return render_template('studentlist.html',slist=db.getall_records(table=table),columns=columns,admin=admin,attendance_checker=False) if not session.get('name') == None else redirect(url_for('login'))
 
 @app.route('/createqr', methods=['POST'])
 def createqr():
@@ -165,6 +160,7 @@ def saveinfo():
     course = request.form.get('my_course')
     level = request.form.get('my_level')
     image_data = request.form.get('image_data')  # Base64 image data
+    #qr_data = request.form.get('image_data')
 
     print("Form Data:", idno, lastname, firstname, course, level)
 
@@ -218,7 +214,7 @@ def after_request(response):
 @app.route('/logout')
 def logout():
     session['name'] = None
-    return redirect(url_for('login'))
+    return redirect(url_for('attendance'))
 
 @app.route('/registeradmin', methods=['POST'])
 def registeradmin():
@@ -241,7 +237,7 @@ def loginadmin():
         if record['username'] == username and record['password'] == password:
             flash(f'Welcome {username}!', 'success')
             session['name'] = username
-            return redirect(url_for('attendance'))
+            return redirect(url_for('studentlist'))
     else:
         flash('Invalid Credentials!', 'error')
         return redirect(url_for('login'))
@@ -260,15 +256,15 @@ def grant(myData):
 
 @app.route('/logs')
 def logs():
-    return render_template('logs.html',logs=db.getall_records(table='attendancelog')) if not session.get('name') == None else render_template('login.html')
+    return render_template('logs.html',logs=db.getall_records(table='attendancelog'),attendance_checker=False) if not session.get('name') == None else render_template('login.html')
 
 @app.route('/')
 def attendance():
-      return render_template('attendance.html') if not session.get('name') == None else render_template('login.html')
+      return render_template('attendance.html',attendance_checker=True)
 
 @app.route('/index')
 def index():
-    return render_template('index.html',columns=columns) if not session.get('name') == None else render_template('login.html')
+    return render_template('index.html',columns=columns, attendance_checker=False) if not session.get('name') == None else render_template('login.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
