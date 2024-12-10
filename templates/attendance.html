@@ -9,27 +9,41 @@
     </div>
     <!-- Modal -->
     <div id="granted-modal" class="w3-modal ">
-        <div class="w3-modal-content w3-animate-zoom w3-round-large">
-            <header class="w3-container w3-green">
+        <div class="w3-modal-content w3-animate-zoom w3-round-large" style="width:50%; bottom:5em;">
+            <header class="w3-container w3-2021-mint">
                 <span onclick="document.getElementById('granted-modal').style.display='none'"
                 class="w3-button w3-display-topright w3-large">&times;</span>
-                <h2>Access Granted</h2>
+                <h2>Attendance Logged</h2>
             </header>
-            <div class="w3-container" id="modal-content">
-                <p>Student details will appear here.</p>
-                <h3>Student ID</h3>
-                <p id="studentidp"><b></b></p>
-                <h3>Student Lastname</h3>
-                <p id="studentlastname"><b></b></p>
-                <h3>Student Firstname</h3>
-                <p id="studentfirstname"><b></b></p>
-                <h3>Student Course</h3>
-                <p id="studentcourse"><b></b></p>
-                <h3>Student Level</h3>
-                <p id="studentlevel"><b></b></p>
-                <h3>Image</h3>
-                <img id="studentImage" src="" alt="Student Image" />
+            <div class="student-details-container" id="modal-content">
+                <h2 class="section-title">Student Details</h2>
+                <div class="student-image-section">
+                    <img id="studentImage" src="" alt="Student Image" class="student-image" />
+                </div>
+                <div class="student-info">
+                    <div class="info-row">
+                        <h3>Student ID:</h3>
+                        <p id="studentidp" class="info-text"><b></b></p>
+                    </div>
+                    <div class="info-row">
+                        <h3>Lastname:</h3>
+                        <p id="studentlastname" class="info-text"><b></b></p>
+                    </div>
+                    <div class="info-row">
+                        <h3>Firstname:</h3>
+                        <p id="studentfirstname" class="info-text"><b></b></p>
+                    </div>
+                    <div class="info-row">
+                        <h3>Course:</h3>
+                        <p id="studentcourse" class="info-text"><b></b></p>
+                    </div>
+                    <div class="info-row">
+                        <h3>Level:</h3>
+                        <p id="studentlevel" class="info-text"><b></b></p>
+                    </div>
+                </div>
             </div>
+            
         </div>
     </div>
 </main>

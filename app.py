@@ -244,7 +244,7 @@ def loginadmin():
 
 @app.route('/register')
 def register():
-    return render_template('register.html')
+    return render_template('register.html') if not session['name'] == None else render_template('login.html')
 
 @app.route('/login')
 def login():

@@ -1,58 +1,109 @@
 {% macro showform(mode, columns) -%}
     {% if mode == 'take_snap' %}
-        <div>
-            <form id="userForm" action="/createqr" method="POST" style="width: 100%;margin: auto;color:black">
-                    {% for column in columns %}
-                        <div class="w3-padding">
-                            <input type="text" id="{{ column }}" name="{{ column }}" placeholder="Enter {{ column }}" class="w3-input w3-border w3-round-large" required>
+        <div style="margin-top: 2em;">
+            <form id="userForm" action="/createqr" method="POST" style="width: 100%; margin: auto; color: black;">
+                {% for column in columns %}
+                    {% if not column == 'course' and not column == 'level' %}
+                        <div class="w3-padding" style="margin-bottom: 15px;">
+                            <input 
+                                type="text" 
+                                id="{{ column }}" 
+                                name="{{ column }}" 
+                                placeholder="Enter {{ column }}" 
+                                class="w3-input w3-border w3-round-large" 
+                                required>
                         </div>
-                    {% endfor %}
+                    {% elif column == 'course' %}
+                        <div class="w3-padding" style="margin-bottom: 15px;">
+                            <select 
+                                id="{{ column }}" 
+                                name="{{ column }}" 
+                                class="w3-select w3-border w3-round-large" 
+                                required>
+                                <option value="" disabled selected>Select Course</option>
+                                <option value="BSIT">BSIT</option>
+                                <option value="BSN">BSN</option>
+                                <option value="BSCRIM">BSCRIM</option>
+                                <option value="BSCS">BSCS</option>
+                                <option value="BSCPE">BSCPE</option>
+                                <option value="BSED">BSED</option>
+                                <option value="BSCE">BSCE</option>
+                            </select>
+                        </div>
+                    {% elif column == 'level' %}
+                        <div class="w3-padding" style="margin-bottom: 15px;">
+                            <select 
+                                id="{{ column }}" 
+                                name="{{ column }}" 
+                                class="w3-select w3-border w3-round-large" 
+                                required>
+                                <option value="" disabled selected>Select Level</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                    {% endif %}
+                {% endfor %}
             
-                    <div class="w3-container w3-center w3-bar w3-row-padding w3-padding">
-                        <button 
-                            type="button"
-                            onclick="take_snapshot()" 
-                            class="w3-button w3-2021-french-blue w3-round w3-xlarge w3-margin-xlarge w3-bar-item" 
-                            style="color:white; border:none;">
-                            SNAP
-                            <i class="glyphicon glyphicon-camera"></i>
-                        </button>
-                    </div>
+                <div class="w3-container w3-center w3-bar w3-row-padding w3-padding">
+                    <button 
+                        type="button" 
+                        onclick="take_snapshot()" 
+                        class="w3-button w3-2021-french-blue w3-round w3-xlarge w3-margin-xlarge w3-bar-item" 
+                        style="color: white; border: none;">
+                        SNAP
+                        <i class="glyphicon glyphicon-camera"></i>
+                    </button>
+                </div>
             </form>
         </div>
     {% else %}
-        <div class="w3-row-padding">
-            <form action="/saveinfo" method="POST">
+    <div class="w3-container w3-padding-large">
+        <form action="/saveinfo" method="POST">
+            <div class="w3-row-padding">
                 {% for column in columns %}
-                    <div class="w3-half w3-row-padding">
+                    <!-- Adjusted to fit two fields per row -->
+                    <div class="">
                         <p>
-                            <label style="color:white">{{ column.upper() }}</label>
-                            <input type="text" id="my_{{ column }}" name="my_{{ column }}" class="w3-input w3-border w3-round-large" style=" background: transparent;border: none; color:aliceblue" readonly>
+                            <label class="w3-left" style="color: white; font-weight: bold; ">{{ column.upper() }}</label>
+                            <input 
+                                type="text" 
+                                id="my_{{ column }}" 
+                                name="my_{{ column }}" 
+                                class="w3-input w3-border w3-round-large" 
+                                style="border: 1px solid white;;" 
+                                readonly>
                         </p>
                     </div>
                 {% endfor %}
+            </div>
     
-                <!-- Hidden input for the snapshot image data -->
-                <input type="hidden" id="image_data" name="image_data">
-                <div>
-                    <div class="w3-container">
-                        <button
-                            type="submit"
-                            class="w3-button w3-2021-french-blue w3-round-large w3-xlarge w3-margin-xlarge" 
-                            style="color:white; border:none;">
-                            SAVE
-                            <i class="glyphicon glyphicon-saved"></i>
-                        </button>
-                        <button
-                            type="button"
-                            onclick="deleteQR()"
-                            class="w3-button w3-2021-french-blue w3-round-large w3-xlarge w3-margin-xlarge">
-                                CANCEL</a>             
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>       
+            <!-- Hidden input for snapshot image -->
+            <input type="hidden" id="image_data" name="image_data">
+    
+            <!-- Buttons section -->
+            <div class="w3-container w3-center " >
+                <button 
+                    type="submit" 
+                    class="w3-button w3-2021-french-blue w3-round-large w3-xlarge w3-margin w3-hover-opacity" 
+                    style="color: white; border: none; padding: 10px 30px;">
+                    SAVE
+                    <i class="glyphicon glyphicon-saved"></i>
+                </button>
+                <button 
+                    type="button" 
+                    onclick="deleteQR()" 
+                    class="w3-button w3-2021-red w3-round-large w3-xlarge w3-margin w3-hover-opacity" 
+                    style="color: white; border: none; padding: 10px 30px;">
+                    CANCEL
+                    <i class="glyphicon glyphicon-remove"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+      
      {% endif %}
 {%- endmacro %}
 
@@ -192,7 +243,7 @@
                 </button>
             </div>
             <div class="w3-padding-large">
-                <p>Don't have an account? <span style="color:rgb(6, 154, 223);cursor:pointer"><a href="{{ url_for('register') }}">Register here!</a></span></p>
+                <p><span style="color:rgb(20, 154, 211)">NOTE:</span>This attendance checker is checkering</p>
             </div>
         </form>
     </div>
