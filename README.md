@@ -8,5 +8,4 @@ OpenCV Backend ⚙️: Uses OpenCV to decode QR codes in real-time, processing t
 SQLite Database 📂: Attendance records are stored securely in an SQLite database for easy retrieval and management.
 Easy-to-Use 👩‍🏫👨‍🏫: Designed with simplicity in mind for both students and teachers, making attendance management efficient and automated.
 ## Future Enhancements 🌱:
-User Authentication 🔒: Ensuring only authorized users can mark attendance.
 Real-Time Monitoring 📊: Live attendance updates and reports for instructors.
